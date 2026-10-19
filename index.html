@@ -6,7 +6,7 @@
         body {
             margin: 0;
             padding: 0;
-            /* 요청하신 핀터레스트 이미지 주소 적용 */
+            /* 요청하신 핀터레스트 이미지 주소 그대로 사용 */
             background-image: url('https://i.pinimg.com/736x/65/e6/8d/65e68d06e2a77d86621e6d747d710605.jpg');
             background-size: cover;
             background-position: center;
@@ -17,49 +17,47 @@
             height: 100vh;
             overflow: hidden;
         }
-        /* 배경 이미지만 흐리게(Blur) 만드는 레이어 */
+        /* 배경 이미지만 흐리게(Blur) 만드는 레이어 (블러 수치 대폭 축소) */
         .bg-blur {
             position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
             background-image: url('https://i.pinimg.com/736x/65/e6/8d/65e68d06e2a77d86621e6d747d710605.jpg');
             background-size: cover;
             background-position: center;
-            filter: blur(6px); /* 흐림 정도 조절 (숫자가 클수록 흐려짐) */
-            transform: scale(1.1); /* 블러 때문에 생기는 테두리 흰 여백 방지 */
+            filter: blur(2px); /* [수정] 블러를 약하게(6px -> 2px) 줄여서 이미지가 보이게 함 */
+            transform: scale(1.05); /* 블러 여백 방지용 스케일 축소 */
             z-index: 1;
         }
-        /* 글자 가독성을 위한 어두운/반투명 오버레이 */
+        /* 가독성을 위한 어두운 오버레이 (블러가 줄어든 만큼 배경이 밝아져서 더 어둡게 조절) */
         .overlay {
             position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.25); /* 살짝 어둡게 만들어 글자를 돋보이게 함 */
+            background: rgba(0, 0, 0, 0.4); /* [수정] 반투명 어두운 필터를 조금 더 진하게 (0.25 -> 0.4) */
             z-index: 2;
         }
-        /* 디데이 카드 디자인 */
+        /* 디데이 글자 부분 (흰색 카드 배경 완전 제거) */
         .dday-card {
             position: relative;
             z-index: 3;
-            background: rgba(255, 255, 255, 0.85); /* 반투명 흰색 카드 */
-            backdrop-filter: blur(4px);
-            border: 1px solid rgba(255, 255, 255, 0.5);
-            border-radius: 20px;
-            padding: 24px 32px;
+            background: transparent; /* [수정] 흰색 배경 없앰 (반투명 카드 -> 투명) */
             text-align: center;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
             width: 240px;
+            padding: 20px;
         }
         .dday-title {
             font-size: 14px;
-            color: #444444;
+            color: #ffffff; /* [수정] 글자색을 흰색으로 변경 (어두운 필터 위에서 가독성 확보) */
             font-weight: 600;
             margin-bottom: 8px;
             letter-spacing: -0.3px;
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5); /* 글자 그림자 추가로 가독성 보완 */
         }
         .dday-count {
-            font-size: 34px;
+            font-size: 34px; /* 기존 글자 크기 유지 */
             font-weight: 700;
-            color: #111111;
+            color: #ffffff; /* [수정] 글자색을 흰색으로 변경 */
             letter-spacing: -0.5px;
+            text-shadow: 0 1px 4px rgba(0, 0, 0, 0.6); /* 글자 그림자 추가 */
         }
     </style>
 </head>
@@ -68,14 +66,13 @@
     <div class="overlay"></div>
     
     <div class="dday-card">
-        <div class="dday-title" id="title">목표일</div>
+        <div class="dday-title" id="title">디데이</div>
         <div class="dday-count" id="counter">D-0</div>
     </div>
 
     <script>
-        // URL 파라미터에서 제목과 날짜 읽어오기 (?title=제목&date=YYYY-MM-DD)
+        // URL 파라미터에서 제목과 날짜 읽어오기
         const urlParams = new URLSearchParams(window.location.search);
-        
         const titleParam = urlParams.get('title');
         const dateParam = urlParams.get('date');
 
@@ -88,7 +85,6 @@
             const today = new Date();
             const tParts = targetDateStr.split('-');
             const targetDate = new Date(tParts[0], tParts[1] - 1, tParts[2]);
-
             const tDate = new Date(targetDate.getFullYear(), targetDate.getMonth(), targetDate.getDate());
             const cDate = new Date(today.getFullYear(), today.getMonth(), today.getDate());
             
@@ -104,7 +100,6 @@
                 counterEl.innerText = `D+${Math.abs(diffDays)}`;
             }
         }
-
         calculateDday();
     </script>
 </body>
