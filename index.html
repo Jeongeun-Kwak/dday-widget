@@ -20,8 +20,7 @@
             top: 0; left: 0; width: 100%; height: 100%;
             background-size: cover;
             background-position: center;
-            filter: blur(2px);
-            transform: scale(1.05);
+            transform: scale(1.08); /* 블러 여백 방지용 확대 */
             z-index: 1;
         }
         .overlay {
@@ -35,21 +34,17 @@
             z-index: 3;
             background: transparent;
             text-align: center;
-            width: 240px;
+            width: 280px;
             padding: 20px;
         }
         .dday-title {
-            font-size: 14px;
-            color: #ffffff;
             font-weight: 600;
             margin-bottom: 8px;
             letter-spacing: -0.3px;
             text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);
         }
         .dday-count {
-            font-size: 34px;
             font-weight: 700;
-            color: #ffffff;
             letter-spacing: -0.5px;
             text-shadow: 0 1px 4px rgba(0, 0, 0, 0.7);
         }
@@ -65,26 +60,45 @@
     </div>
 
     <script>
-        // URL 파라미터 읽기 (?title=제목&date=날짜&bg=이미지주소)
+        // URL 파라미터 읽기
         const urlParams = new URLSearchParams(window.location.search);
         
         const titleParam = urlParams.get('title');
         const dateParam = urlParams.get('date');
         const bgParam = urlParams.get('bg');
+        const blurParam = urlParams.get('blur');   // 블러 정도 (예: 4px)
+        const colorParam = urlParams.get('color'); // 글자 색상 (예: #ffffff, #ffd700 등)
+        const sizeParam = urlParams.get('size');   // 숫자 크기 (예: 36px)
 
-        // 기본값 설정 (이미지 주소가 없으면 기존 핀터레스트 이미지 사용)
+        // 1. 배경 이미지 설정 (기본값: 기존 핀터레스트 이미지)
         const defaultBg = 'https://i.pinimg.com/736x/65/e6/8d/65e68d06e2a77d86621e6d747d710605.jpg';
         const bgImage = bgParam ? decodeURIComponent(bgParam) : defaultBg;
-
-        // 배경 이미지 적용
         document.body.style.backgroundImage = `url('${bgImage}')`;
         document.getElementById('bgBlur').style.backgroundImage = `url('${bgImage}')`;
 
+        // 2. 블러 정도 설정 (기본값: 2px)
+        const blurVal = blurParam ? blurParam : '2px';
+        document.getElementById('bgBlur').style.filter = `blur(${blurVal})`;
+
+        // 3. 텍스트 및 날짜 설정
         const titleText = titleParam ? decodeURIComponent(titleParam) : "디데이";
         const targetDateStr = dateParam ? dateParam : "2026-12-31";
-
         document.getElementById('title').innerText = titleText;
 
+        // 4. 글자 색상 및 크기 설정 적용
+        const textColor = colorParam ? decodeURIComponent(colorParam) : '#ffffff';
+        const numSize = sizeParam ? sizeParam : '34px';
+        
+        const titleEl = document.getElementById('title');
+        const counterEl = document.getElementById('counter');
+
+        titleEl.style.color = textColor;
+        titleEl.style.fontSize = `calc(${numSize} * 0.42)`; // 제목은 숫자 크기에 비례해서 자동 조절
+        
+        counterEl.style.color = textColor;
+        counterEl.style.fontSize = numSize;
+
+        // 디데이 계산 로직
         function calculateDday() {
             const today = new Date();
             const tParts = targetDateStr.split('-');
@@ -95,7 +109,6 @@
             const diffTime = tDate - cDate;
             const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
-            const counterEl = document.getElementById('counter');
             if (diffDays > 0) {
                 counterEl.innerText = `D-${diffDays}`;
             } else if (diffDays === 0) {
