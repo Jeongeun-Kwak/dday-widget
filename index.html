@@ -6,8 +6,6 @@
         body {
             margin: 0;
             padding: 0;
-            /* 요청하신 핀터레스트 이미지 주소 그대로 사용 */
-            background-image: url('https://i.pinimg.com/736x/65/e6/8d/65e68d06e2a77d86621e6d747d710605.jpg');
             background-size: cover;
             background-position: center;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
@@ -17,52 +15,48 @@
             height: 100vh;
             overflow: hidden;
         }
-        /* 배경 이미지만 흐리게(Blur) 만드는 레이어 (블러 수치 대폭 축소) */
         .bg-blur {
             position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
-            background-image: url('https://i.pinimg.com/736x/65/e6/8d/65e68d06e2a77d86621e6d747d710605.jpg');
             background-size: cover;
             background-position: center;
-            filter: blur(2px); /* [수정] 블러를 약하게(6px -> 2px) 줄여서 이미지가 보이게 함 */
-            transform: scale(1.05); /* 블러 여백 방지용 스케일 축소 */
+            filter: blur(2px);
+            transform: scale(1.05);
             z-index: 1;
         }
-        /* 가독성을 위한 어두운 오버레이 (블러가 줄어든 만큼 배경이 밝아져서 더 어둡게 조절) */
         .overlay {
             position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.4); /* [수정] 반투명 어두운 필터를 조금 더 진하게 (0.25 -> 0.4) */
+            background: rgba(0, 0, 0, 0.4);
             z-index: 2;
         }
-        /* 디데이 글자 부분 (흰색 카드 배경 완전 제거) */
         .dday-card {
             position: relative;
             z-index: 3;
-            background: transparent; /* [수정] 흰색 배경 없앰 (반투명 카드 -> 투명) */
+            background: transparent;
             text-align: center;
             width: 240px;
             padding: 20px;
         }
         .dday-title {
             font-size: 14px;
-            color: #ffffff; /* [수정] 글자색을 흰색으로 변경 (어두운 필터 위에서 가독성 확보) */
+            color: #ffffff;
             font-weight: 600;
             margin-bottom: 8px;
             letter-spacing: -0.3px;
-            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5); /* 글자 그림자 추가로 가독성 보완 */
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);
         }
         .dday-count {
-            font-size: 34px; /* 기존 글자 크기 유지 */
+            font-size: 34px;
             font-weight: 700;
-            color: #ffffff; /* [수정] 글자색을 흰색으로 변경 */
+            color: #ffffff;
             letter-spacing: -0.5px;
-            text-shadow: 0 1px 4px rgba(0, 0, 0, 0.6); /* 글자 그림자 추가 */
+            text-shadow: 0 1px 4px rgba(0, 0, 0, 0.7);
         }
     </style>
 </head>
 <body>
-    <div class="bg-blur"></div>
+    <div class="bg-blur" id="bgBlur"></div>
     <div class="overlay"></div>
     
     <div class="dday-card">
@@ -71,10 +65,20 @@
     </div>
 
     <script>
-        // URL 파라미터에서 제목과 날짜 읽어오기
+        // URL 파라미터 읽기 (?title=제목&date=날짜&bg=이미지주소)
         const urlParams = new URLSearchParams(window.location.search);
+        
         const titleParam = urlParams.get('title');
         const dateParam = urlParams.get('date');
+        const bgParam = urlParams.get('bg');
+
+        // 기본값 설정 (이미지 주소가 없으면 기존 핀터레스트 이미지 사용)
+        const defaultBg = 'https://i.pinimg.com/736x/65/e6/8d/65e68d06e2a77d86621e6d747d710605.jpg';
+        const bgImage = bgParam ? decodeURIComponent(bgParam) : defaultBg;
+
+        // 배경 이미지 적용
+        document.body.style.backgroundImage = `url('${bgImage}')`;
+        document.getElementById('bgBlur').style.backgroundImage = `url('${bgImage}')`;
 
         const titleText = titleParam ? decodeURIComponent(titleParam) : "디데이";
         const targetDateStr = dateParam ? dateParam : "2026-12-31";
